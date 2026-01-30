@@ -63,15 +63,15 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex gap-2 items-start">
                 <MapPin size={18} className="flex-shrink-0 mt-0.5 text-purple-400" />
-                <span>Your City, Country</span>
+                <span>Jhansi, India</span>
               </li>
               <li className="flex gap-2 items-center">
                 <Phone size={18} className="flex-shrink-0 text-purple-400" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 73098 33068</span>
               </li>
               <li className="flex gap-2 items-center">
                 <Mail size={18} className="flex-shrink-0 text-purple-400" />
-                <span>support@giveat.com</span>
+                <span>support@giveat.in</span>
               </li>
             </ul>
           </div>

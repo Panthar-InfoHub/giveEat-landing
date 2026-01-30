@@ -5,7 +5,7 @@ export function Header() {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div className="flex-shrink-0">
-          <img src="/giveat-logo.jpg" alt="Giveat Logo" className="h-12 w-auto" />
+          <img src="/giveat-logo.jpg" alt="Giveat Logo" className="h-12 w-auto border border-gray-200 rounded-lg" />
         </div>
         <div className="hidden md:flex items-center gap-8">
           <a href="#about" className="text-gray-700 hover:text-purple-600 transition">

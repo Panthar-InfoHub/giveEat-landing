@@ -1,6 +1,14 @@
+'use client';
+
+import { useState } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
+import { RestaurantModal } from './ResturantModal';
+import { RiderModal } from './RiderModal';
 
 export function Partner() {
+  const [isRestaurantModalOpen, setIsRestaurantModalOpen] = useState(false);
+  const [isRiderModalOpen, setIsRiderModalOpen] = useState(false);
+
   return (
     <section id="partner" className="py-24 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
@@ -57,7 +65,10 @@ export function Partner() {
               </div>
             </div>
 
-            <button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-semibold hover:shadow-lg transition flex items-center justify-center gap-2">
+            <button
+              onClick={() => setIsRestaurantModalOpen(true)}
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-2xl font-semibold hover:shadow-lg transition flex items-center justify-center gap-2"
+            >
               Register Your Restaurant <ArrowRight size={20} />
             </button>
           </div>
@@ -106,12 +117,19 @@ export function Partner() {
               </div>
             </div>
 
-            <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-2xl font-semibold hover:shadow-lg transition flex items-center justify-center gap-2">
+            <button
+              onClick={() => setIsRiderModalOpen(true)}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-2xl font-semibold hover:shadow-lg transition flex items-center justify-center gap-2"
+            >
               Join as Delivery Rider <ArrowRight size={20} />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <RestaurantModal isOpen={isRestaurantModalOpen} onClose={() => setIsRestaurantModalOpen(false)} />
+      <RiderModal isOpen={isRiderModalOpen} onClose={() => setIsRiderModalOpen(false)} />
     </section>
   );
 }
