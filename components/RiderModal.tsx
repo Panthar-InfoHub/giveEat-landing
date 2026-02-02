@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import React from "react"
+import React from "react";
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState } from "react";
+import { X } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface RiderModalProps {
   isOpen: boolean;
@@ -11,16 +12,23 @@ interface RiderModalProps {
 }
 
 export function RiderModal({ isOpen, onClose }: RiderModalProps) {
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
-    fullName: '',
-    mobile: '',
-    email: '',
-    bikeType: '',
-    city: '',
-    workingPreference: '',
+    fullName: "",
+    mobile: "",
+    email: "",
+    bikeType: "",
+    city: "",
+    workingPreference: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -28,19 +36,49 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Rider Form Data:', formData);
-    // Handle form submission here
-    setFormData({
-      fullName: '',
-      mobile: '',
-      email: '',
-      bikeType: '',
-      city: '',
-      workingPreference: '',
-    });
-    onClose();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    try {
+      const res = await fetch("/api/send-rider-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit");
+      }
+
+      setSuccess(true);
+      setFormData({
+        fullName: "",
+        mobile: "",
+        email: "",
+        bikeType: "",
+        city: "",
+        workingPreference: "",
+      });
+
+      setTimeout(() => {
+        onClose();
+        setSuccess(false);
+      }, 1500);
+
+      toast({
+        title: "Application Submitted 🚴",
+        description: "Your rider application has been received.",
+      });
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -48,7 +86,10 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      ></div>
 
       {/* Modal */}
       <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 mx-4 max-h-[90vh] overflow-y-auto">
@@ -65,18 +106,24 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
           <div className="inline-block bg-gradient-to-r from-blue-100 to-purple-100  bg-clip-text mb-3">
             <h2 className="text-3xl font-bold">Join as Delivery Rider</h2>
           </div>
-          <p className="text-gray-600">Start earning with flexible working hours</p>
+          <p className="text-gray-600">
+            Start earning with flexible working hours
+          </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Basic Details Section */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">Basic Details</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+              Basic Details
+            </h3>
 
             {/* Full Name */}
             <div className="mb-5">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Full Name
+              </label>
               <input
                 type="text"
                 name="fullName"
@@ -90,7 +137,9 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
 
             {/* Mobile Number */}
             <div className="mb-5">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Mobile Number
+              </label>
               <input
                 type="tel"
                 name="mobile"
@@ -104,7 +153,9 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
 
             {/* Email ID */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email ID</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email ID
+              </label>
               <input
                 type="email"
                 name="email"
@@ -119,10 +170,14 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
 
           {/* Vehicle Info Section */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">Vehicle Info</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+              Vehicle Info
+            </h3>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Bike Type</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Bike Type
+              </label>
               <select
                 name="bikeType"
                 value={formData.bikeType}
@@ -140,10 +195,14 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
 
           {/* Location Section */}
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">Location</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+              Location
+            </h3>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">City / Area</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                City / Area
+              </label>
               <input
                 type="text"
                 name="city"
@@ -158,10 +217,14 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
 
           {/* Availability Section */}
           <div className="mb-8">
-            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">Availability</h3>
+            <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
+              Availability
+            </h3>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Working Preference</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Working Preference
+              </label>
               <select
                 name="workingPreference"
                 value={formData.workingPreference}
@@ -179,9 +242,10 @@ export function RiderModal({ isOpen, onClose }: RiderModalProps) {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-60"
           >
-            Submit Application
+            {loading ? "Submitting..." : "Submit Application"}
           </button>
         </form>
       </div>
